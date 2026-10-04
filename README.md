@@ -1,56 +1,117 @@
-# Welcome to your Expo app 👋
+# Triply — Automatic Holiday Itinerary Planner
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+> **Plan Less. Travel More.**
+> Aplikasi mobile yang membuat itinerary liburan secara otomatis berdasarkan preferensi pengguna.
 
-## Get started
+Proyek kelompok mata kuliah **Pemrograman Mobile** (Expo + React Native + TypeScript).
+Aplikasi dikembangkan bertahap dari **Modul 1 sampai Modul 6**.
 
-1. Install dependencies
+- **Destinasi yang didukung:** Yogyakarta, Bali, Malang
+- **Status saat ini:** Modul 1
 
-   ```bash
-   npm install
-   ```
+## Tim
 
-2. Start the app
+| Nama | Bagian |
+|---|---|
+| Adi | Data & logika (types, data, utils, algoritma itinerary) |
+| Idris | Tampilan itinerary & fitur (ringkasan trip, kartu hari, kartu fitur) |
+| Arif | Landing page & halaman utama (hero, kartu destinasi, tombol, layout) |
 
-   ```bash
-   npx expo start
-   ```
+## Fitur Modul 1
 
-In the output, you'll find options to open the app in a
+- Landing page dengan hero, daftar kota (`FlatList`), dan tombol interaktif (`Alert`).
+- Contoh itinerary otomatis yang dihitung dari satu objek preferensi tetap.
+- Ringkasan trip: kota, jumlah hari, jumlah traveler, kategori, dan estimasi biaya tiket.
+- Jadwal per hari: jam, nama tempat, rating, durasi, dan biaya.
+- Bagian "Why plan with Triply?" dengan ikon.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+> Form input (pilih kota, kategori, durasi, dsb.) dan navigasi antar halaman akan ditambahkan di modul berikutnya.
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## Teknologi
 
-## Get a fresh project
+- Expo SDK 57 · React Native · TypeScript
+- expo-router
+- @expo/vector-icons (Ionicons)
 
-When you're ready, run:
+## Cara Menjalankan
 
 ```bash
-npm run reset-project
+git clone https://github.com/<username>/<nama-repo>.git
+cd <nama-repo>
+npm install
+npx expo start --go
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Scan QR yang muncul dengan aplikasi **Expo Go** di HP (HP dan laptop harus satu jaringan Wi-Fi).
+Jika tampilan aneh atau error cache, jalankan `npx expo start -c`.
 
-### Other setup steps
+## Struktur Folder
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+```
+src/
+├── app/
+│   ├── _layout.tsx            # layout root expo-router
+│   └── index.tsx              # halaman utama (menyusun semua komponen)
+├── components/
+│   ├── PrimaryButton.tsx      # tombol reusable (+ ikon)
+│   ├── HeroSection.tsx        # bagian atas halaman
+│   ├── DestinationCard.tsx    # kartu kota
+│   ├── TripSummary.tsx        # ringkasan trip & biaya
+│   ├── DayCard.tsx            # jadwal satu hari
+│   └── FeatureCard.tsx        # kartu "Why Triply"
+├── data/
+│   ├── destinations.ts        # array kota
+│   ├── places.ts              # array tempat wisata
+│   ├── features.ts            # array kartu fitur
+│   └── samplePreferences.ts   # preferensi contoh (bisa diubah)
+├── algorithms/
+│   └── generateItinerary.ts   # inti aplikasi: preferensi -> itinerary
+├── utils/
+│   └── format.ts              # fungsi bantu (formatRupiah, formatTime, dst.)
+├── styles/
+│   ├── theme.ts               # warna bersama
+│   ├── landing.styles.ts      # style hero, kartu kota, tombol, footer
+│   └── trip.styles.ts         # style ringkasan, kartu hari, kartu fitur
+└── types/
+    └── index.ts               # semua interface & type
+```
 
-## Learn more
+## Cara Kerja Itinerary (Modul 1)
 
-To learn more about developing your project with Expo, look at the following resources:
+`generateItinerary(preferences, places)` bekerja dalam 3 langkah:
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+1. **Filter** — ambil tempat yang kotanya sama dan punya minimal satu kategori yang dipilih.
+2. **Urutkan** — rating tertinggi lebih dulu.
+3. **Bagi ke hari** — setiap hari dimulai pukul 09:00; tiap tempat diberi jam berdasarkan durasi kunjungan ditambah jeda perjalanan 30 menit.
 
-## Join the community
+Untuk mencoba hasil yang berbeda, ubah nilai di `src/data/samplePreferences.ts` (kota, jumlah hari, kategori, jumlah tempat per hari).
 
-Join our community of developers creating universal apps.
+## Pemetaan Materi Modul 1
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+| Materi | Contoh di kode |
+|---|---|
+| Struktur import & return komponen | semua file di `components/` dan `app/` |
+| Komponen & props | `DestinationCard`, `DayCard`, `PrimaryButton` |
+| Internal / External / Inline styling | external: `styles/`; inline: `style={{ ... }}` di `PrimaryButton`, `DayCard`, `TripSummary` |
+| Package & library | `@expo/vector-icons` |
+| Variable & conditions | `if / else if / else` di `utils/format.ts`; ternary di `DayCard` dan `TripSummary` |
+| Function bawaan | `Alert.alert`, `Math.floor`, `padStart`, `push`, `sort` |
+| Function custom | `formatRupiah`, `formatTime`, `getRatingLabel`, `generateItinerary`, `getTotalCost` |
+| Callback function | `onPress`, `.some(...)`, `.sort(...)` |
+| Loops | `.map()`, `FlatList`, `for` loop |
+| Array of object, type & interface | `data/*.ts` dan `types/index.ts` |
+
+## Alur Git
+
+- Branch utama: `main`
+- Branch kerja: `feat/adi`, `feat/idris`, `feat/arif`
+- Perubahan masuk ke `main` lewat Pull Request, dengan urutan Adi → Idris → Arif.
+- Setiap anggota hanya mengedit file bagiannya sendiri.
+
+## Rencana Modul Berikutnya
+
+| Modul | Rencana |
+|---|---|
+| 2 | `useState` & `useEffect`, navigasi `expo-router` (`push`, `back`), `_layout.tsx` dengan `<Stack.Screen>`; form input preferensi |
+| 3 | Mengambil data dari API eksternal (mis. cuaca per kota), fungsi async, `.then()` / `.resolve()` / `.reject()` |
+| 4–6 | Rekomendasi hotel, estimasi waktu tempuh, regenerate itinerary, simpan & bagikan trip (menyesuaikan kriteria tiap modul) |
