@@ -1,52 +1,67 @@
-// [ADI] Semua type & interface ada di sini.
-import { Ionicons } from '@expo/vector-icons';
+// [ARIF] Halaman utama: menyusun semua komponen (hero -> kota -> contoh itinerary -> fitur -> footer).
+import { Alert, FlatList, ScrollView, Text, View } from 'react-native';
+import { generateItinerary, getTotalCost } from '../algorithms/generateItinerary';
+import DayCard from '../components/DayCard';
+import DestinationCard from '../components/DestinationCard';
+import FeatureCard from '../components/FeatureCard';
+import HeroSection from '../components/HeroSection';
+import PrimaryButton from '../components/PrimaryButton';
+import TripSummary from '../components/TripSummary';
+import { destinations } from '../data/destinations';
+import { features } from '../data/features';
+import { places } from '../data/places';
+import { samplePreferences } from '../data/samplePreferences';
+import { landing } from '../styles/landing.styles';
 
-// Kota tujuan (dipakai di FlatList)
-export interface Destination {
-  id: string;
-  name: string;
-  description: string;
-  image: string;
-}
+export default function Index() {
+  // Itinerary contoh dihitung dari preferensi tetap
+  const plans = generateItinerary(samplePreferences, places);
+  const totalPerPerson = getTotalCost(plans);
 
-// Tempat wisata
-export interface Place {
-  id: string;
-  city: string; // harus sama dengan Destination.name
-  name: string;
-  categories: string[];
-  rating: number;
-  cost: number; // biaya masuk per orang (Rp)
-  duration: number; // lama kunjungan (menit)
-  openHours: string;
-  description: string;
-}
+  return (
+    <ScrollView style={landing.page}>
+      <HeroSection />
 
-// Preferensi user (Modul 1: nilainya tetap, Modul 2: diisi dari form)
-export interface TripPreferences {
-  city: string;
-  days: number;
-  travelers: number;
-  categories: string[];
-  placesPerDay: number;
-}
+      {/* Daftar kota memakai FlatList (horizontal) */}
+      <View style={landing.section}>
+        <Text style={landing.sectionTitle}>Where are you going?</Text>
+        <Text style={landing.sectionSubtitle}>Pick a destination to start.</Text>
+        <FlatList
+          data={destinations}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => <DestinationCard destination={item} />}
+        />
+      </View>
 
-// Satu pemberhentian di itinerary
-export interface Stop {
-  time: string;
-  place: Place;
-}
+      {/* Contoh hasil itinerary */}
+      <View style={landing.section}>
+        <Text style={landing.sectionTitle}>Sample itinerary</Text>
+        <Text style={landing.sectionSubtitle}>This is what Triply creates for you.</Text>
+        <TripSummary prefs={samplePreferences} totalPerPerson={totalPerPerson} />
+        {plans.map((plan) => (
+          <DayCard key={plan.day} plan={plan} />
+        ))}
+      </View>
 
-// Rencana satu hari
-export interface DayPlan {
-  day: number;
-  stops: Stop[];
-}
+      {/* Why Triply */}
+      <View style={landing.section}>
+        <Text style={landing.sectionTitle}>Why plan with Triply?</Text>
+        <Text style={landing.sectionSubtitle}>Less planning, more traveling.</Text>
+        {features.map((f) => (
+          <FeatureCard key={f.id} feature={f} />
+        ))}
+      </View>
 
-// Kartu fitur "Why Triply"
-export interface Feature {
-  id: string;
-  icon: keyof typeof Ionicons.glyphMap;
-  title: string;
-  text: string;
+      <View style={landing.footer}>
+        <Text style={landing.footerTitle}>Ready for your next trip?</Text>
+        <PrimaryButton
+          label="Start Planning"
+          icon="airplane"
+          onPress={() => Alert.alert('Coming soon', 'The planner form will be added in the next module.')}
+        />
+      </View>
+    </ScrollView>
+  );
 }
